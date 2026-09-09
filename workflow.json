@@ -67,7 +67,7 @@
     },
     {
       "parameters": {
-        "url": "https://api.telegram.org/bot8599313925:AAG3ZkpGL57m6BMY2n1QrN9UvDVERtLv9dY/getUpdates?offset=-1",
+        "url": "accessToken":YOUR_BOT_TOKEN_HERE,
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
