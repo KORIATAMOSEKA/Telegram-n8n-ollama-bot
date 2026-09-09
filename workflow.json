@@ -1,0 +1,201 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "chatId": "={{ $('HTTP Request').item.json.result[0].message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -352,
+        -112
+      ],
+      "id": "f88fa2fd-6ae8-4b35-9296-fb094321495f",
+      "name": "Send a text message",
+      "webhookId": "6e3ccb48-7bc2-4275-8c21-ec05967611f6",
+      "credentials": {
+        "telegramApi": {
+          "id": "Xz3WS1EkymJBQnnG",
+          "name": "jibu_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendChatAction",
+        "chatId": "={{ $json.result[0].message.chat.id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -928,
+        -224
+      ],
+      "id": "66ca22e6-e668-4198-a54f-917205c41505",
+      "name": "Send a chat action",
+      "webhookId": "d89c6e72-f126-4cd7-9139-b0e0e407df33",
+      "credentials": {
+        "telegramApi": {
+          "id": "Xz3WS1EkymJBQnnG",
+          "name": "jibu_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds",
+              "secondsInterval": 5
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -1376,
+        96
+      ],
+      "id": "4991a305-d3d8-4f41-8fa1-e01ee2949c4f",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://api.telegram.org/bot8599313925:AAG3ZkpGL57m6BMY2n1QrN9UvDVERtLv9dY/getUpdates?offset=-1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -1392,
+        -176
+      ],
+      "id": "176acfa5-1895-4196-a047-c1e4e190be72",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('HTTP Request').item.json.result[0].message.text }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -704,
+        -112
+      ],
+      "id": "492da2e1-cbfe-406c-8ff5-2cf0c7ca0067",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -1168,
+        -176
+      ],
+      "id": "802575a7-fe7c-4db4-b5d9-0ed81fa9c054",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -848,
+        96
+      ],
+      "id": "c3213a68-93c5-4381-a2c6-725a54056bcd",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "k0d2vqwQ8638B2bx",
+          "name": "Ollama account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Send a chat action": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Send a chat action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "53110ff5959e5249e57f8d2d4be86a4d7aae8a84345fd571d59572080f0d6299"
+  }
+}
